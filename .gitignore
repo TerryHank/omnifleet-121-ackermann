@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+stm32/gcc/*.o
+stm32/gcc/objects.txt
+stm32/gcc/compile-errors.txt
+stm32/gcc/rrc104.*
