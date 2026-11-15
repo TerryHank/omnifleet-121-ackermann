@@ -7,15 +7,21 @@
 - J4／PC8 是转向 PWM，M1 是左驱动轮，M2 是右驱动轮。
 - 固件转向上限为 ±60°。归档时前端和 Xbox 共用的车端软件上限为 ±55°，STM32 读出的零点偏置为 −30°。角度指令尚须对照实车转向几何标定。
 - 实体 SBUS 由 STM32 转发到 NX 的 /stm32/sbus。CH3 负责前后，CH1 负责左右，CH9 的 1000～2000 µs 对应 0.05～3.00 m/s 的请求速度，步长 0.05 m/s。CH9 收到原始值 1700 时，请求速度档为 2.85 m/s。
-- NX 上的 SBUS 服务向 /stm32/sbus/cmd_vel 发布 Twist。固件每轮限幅 1.5 转/秒，按轮径 100 mm 计算，直行轮周速度指令上限约 0.47 m/s。
+- NX 上的 SBUS 服务向 /stm32/sbus/cmd_vel 发布 Twist。最新 STM32 固件将 J4 阿克曼配置的 M1、M2 指令上限提高到 9.55 转/秒，对应 100 mm 轮径下约 3.00 m/s 的直行指令。
 - 原 Xbox 方案的左摇杆负责前后，右摇杆负责转向，十字键上下以 0.05 m/s 步长调档。Xbox 代码随快照归档，采集时车端启用 SBUS 服务。
 - ROS 2 Humble 接收 `/cmd_vel`。J4 的新目标在下一次 PWM 周期生效。偏置保存在 STM32，转向软件上限保存在车端 JSON 配置。
 
 ## STM32
 
-从实车 Flash 回读确认当前程序与 `stm32/images/ackermann121-j4-60deg.bin` 相符。该文件长 71184 字节，写入地址为 `0x08000000`。STM32 最后一个 Flash 扇区（`0x08060000` 起）保存偏置校准。
+从实车 Flash 回读确认当前程序与 `stm32/images/ackermann121-j4-60deg-3mps.bin` 相符。该文件长 71184 字节，写入地址为 `0x08000000`。STM32 最后一个 Flash 扇区（`0x08060000` 起）保存偏置校准。
 
 在 Linux 或 WSL 下安装 Arm GNU Toolchain 并进入 `stm32/`，运行 `python3 gcc/build.py` 和 `bash gcc/link.sh` 可生成 ELF、HEX 与 BIN。源文件保留上游许可与版权声明。`diagnostics/check_ackermann_early.c` 是早期转向范围验证的原始记录。
+
+## 3 m/s 指令实测
+
+现场用 SBUS 在空旷直道操作。CH9 的 1000～2000 µs 对应 SBUS 原始值 192～1792，实测到 1792。NX 发出 3.00 m/s 指令。ROS 编码器速度反馈峰值为 0.296 m/s，接近满速的直行记录中两路 PWM 同时达到输出上限。按 100 mm 轮径折算，3 m/s 需要车轮带载达到约 573 rpm。
+
+速度按编码器和配置的轮径计算。原始车端采样保存在 `nx/runtime_121/diagnostics/ground-speed-3mps.json`。文件包含相对采样时间、SBUS 原始通道、ROS 指令和速度、编码器计数与 STM32 的轮速、目标和 PWM。固件及测量附件见 [最新测试 Release](https://github.com/TerryHank/omnifleet-121-ackermann/releases/tag/121-wheel-speed-test-2026-11-15)。
 
 ## 下载工作区
 

@@ -183,7 +183,9 @@ void set_chassis_type(uint8_t chassis_type)
 		case CHASSIS_TYPE_JETACKER:
             chassis = (ChassisTypeDef*)&jetacker;
             set_motor_type(motors[0], MOTOR_TYPE_JGB520);
+            motors[0]->rps_limit = 9.55f;  /* 3 m/s at 100 mm wheel diameter */
             set_motor_type(motors[1], MOTOR_TYPE_JGB520);
+            motors[1]->rps_limit = 9.55f;  /* 3 m/s at 100 mm wheel diameter */
             set_motor_type(motors[2], MOTOR_TYPE_JGB520);
             set_motor_type(motors[3], MOTOR_TYPE_JGB520);
             break;
