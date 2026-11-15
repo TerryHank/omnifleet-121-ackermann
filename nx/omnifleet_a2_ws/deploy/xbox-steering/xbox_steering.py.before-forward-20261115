@@ -1,0 +1,96 @@
+"""Map the Xbox 360 left stick to the Ackermann steering command on 121."""
+
+import os
+from pathlib import Path
+import struct
+
+import rclpy
+from geometry_msgs.msg import Twist
+from rclpy.node import Node
+
+
+DEVICE = Path("/dev/input/by-id/usb-\u00a9Microsoft_Corporation_Controller_1DD5F3D-joystick")
+EVENT = struct.Struct("<IhBB")
+AXIS_EVENT = 0x02
+LEFT_STICK_X = 0
+STEERING_DEGREES = 25.0
+
+
+def steering_input(events, previous):
+    value = previous
+    for _, raw, kind, axis in EVENT.iter_unpack(events):
+        if (kind & 0x7F) == AXIS_EVENT and axis == LEFT_STICK_X:
+            value = raw
+    return value
+
+
+def steering_angle(raw):
+    return -STEERING_DEGREES * max(-1.0, raw / 32767.0)
+
+
+class XboxSteering(Node):
+    def __init__(self):
+        super().__init__("xbox_steering_121")
+        self.publisher = self.create_publisher(Twist, "/cmd_vel", 1)
+        self.fd = None
+        self.raw = 0
+        self.last_angle = 0.0
+        self.timer = self.create_timer(0.05, self.poll_controller)
+
+    def poll_controller(self):
+        if self.fd is None:
+            try:
+                self.fd = os.open(DEVICE, os.O_RDONLY | os.O_NONBLOCK)
+            except FileNotFoundError:
+                return
+            self.get_logger().info(f"Xbox 360 connected: {DEVICE}")
+
+        try:
+            events = os.read(self.fd, EVENT.size * 64)
+            if not events:
+                self.disconnect()
+                return
+            self.raw = steering_input(events, self.raw)
+        except BlockingIOError:
+            pass
+        except OSError:
+            self.disconnect()
+            return
+
+        angle = steering_angle(self.raw)
+        if angle or self.last_angle:
+            self.publish_angle(angle)
+
+    def publish_angle(self, angle):
+        command = Twist()
+        command.linear.y = angle
+        self.publisher.publish(command)
+        self.last_angle = angle
+
+    def disconnect(self):
+        os.close(self.fd)
+        self.fd = None
+        self.raw = 0
+        if self.last_angle:
+            self.publish_angle(0.0)
+        self.get_logger().info("Xbox 360 disconnected")
+
+
+def main():
+    rclpy.init()
+    node = XboxSteering()
+    try:
+        rclpy.spin(node)
+    except (KeyboardInterrupt, rclpy.executors.ExternalShutdownException):
+        pass
+    finally:
+        if node.fd is not None:
+            os.close(node.fd)
+        node.destroy_node()
+        if rclpy.ok():
+            rclpy.shutdown()
+
+
+if __name__ == "__main__":
+    main()
+

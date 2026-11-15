@@ -1,0 +1,31 @@
+{
+  "nx-a2-workspace": {
+    "regenerable_cache": 158,
+    "git_and_private_metadata": 1,
+    "included": 32554,
+    "raw_media_or_recording": 269,
+    "opaque_archive_or_installer": 11,
+    "credential_assignment": 3,
+    "unverified_model_redistribution": 29,
+    "proprietary_package": 7,
+    "external_symlink": 24
+  },
+  "nx-shared-workspace": {
+    "credential_or_local_database": 1,
+    "included": 1509,
+    "regenerable_cache": 10,
+    "external_symlink": 17
+  },
+  "nx-data": {
+    "included": 118,
+    "regenerable_cache": 2,
+    "complete_flash_snapshot": 6,
+    "unverified_model_redistribution": 7
+  },
+  "nx-runtime": {
+    "included": 1667
+  },
+  "nx-effective-config": {
+    "included": 37
+  }
+}

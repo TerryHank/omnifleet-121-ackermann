@@ -1,0 +1,2 @@
+2026-11-15T19:32:38+0800 iecme-ackermann systemd[1]: Started OmniFleet 121 SBUS drive and steering.
+2026-11-15T19:32:41+0800 iecme-ackermann bash[19526]: [INFO] [1794742361.571329018] [sbus_steering_121]: CH9 speed limit: 2.85 m/s (raw 1700)

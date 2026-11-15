@@ -1,0 +1,7 @@
+2026-11-15T18:27:45+0800 iecme-ackermann systemd[1]: Started OmniFleet 121 Xbox 360 steering.
+2026-11-15T18:27:48+0800 iecme-ackermann bash[748]: [INFO] [1794738468.865964776] [xbox_steering_121]: Xbox 360 connected: /dev/input/by-id/usb-©Microsoft_Corporation_Controller_1DD5F3D-joystick; speed=0.15 m/s; D-pad up/down adjusts speed
+2026-11-15T19:13:12+0800 iecme-ackermann bash[748]: [INFO] [1794741192.993335155] [xbox_steering_121]: Xbox speed limit: 0.20 m/s
+2026-11-15T19:13:13+0800 iecme-ackermann bash[748]: [INFO] [1794741193.243234995] [xbox_steering_121]: Xbox speed limit: 0.25 m/s
+2026-11-15T19:13:13+0800 iecme-ackermann bash[748]: [INFO] [1794741193.443783571] [xbox_steering_121]: Xbox speed limit: 0.30 m/s
+2026-11-15T19:13:13+0800 iecme-ackermann bash[748]: [INFO] [1794741193.643987091] [xbox_steering_121]: Xbox speed limit: 0.35 m/s
+2026-11-15T19:13:15+0800 iecme-ackermann bash[748]: [INFO] [1794741195.043685747] [xbox_steering_121]: Xbox speed limit: 0.40 m/s
